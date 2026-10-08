@@ -1,0 +1,453 @@
+<Window x:Class="WinKeyCastr.UI.PreferencesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="clr-namespace:WinKeyCastr.UI"
+        xmlns:vis="clr-namespace:WinKeyCastr.Visualizers"
+        xmlns:l="clr-namespace:WinKeyCastr.Localization"
+        Title="General"
+        Width="600"
+        SizeToContent="Height"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        ThemeMode="System"
+        FontSize="13">
+
+    <Window.Resources>
+        <ui:EnumEqualsConverter x:Key="EnumEquals" />
+        <ui:EnumIndexConverter x:Key="EnumIndex" />
+        <ui:IconPlacementIndexConverter x:Key="IconPlacementIndex" />
+        <ui:NameVisibilityConverter x:Key="NameVisibility" />
+        <ui:InvertBoolConverter x:Key="InvertBool" />
+        <l:VisualizerNameConverter x:Key="VisualizerName" />
+
+        <!-- Right-aligned form label, as in KeyCastr's preference panes -->
+        <Style x:Key="FormLabel" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,0,12,0" />
+        </Style>
+        <!-- The small grey explanation under a label ("{l:Tr FontSize_Caption}") -->
+        <Style x:Key="Caption" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="TextAlignment" Value="Right" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Width" Value="150" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Opacity" Value="0.55" />
+            <Setter Property="Margin" Value="0,1,12,0" />
+        </Style>
+        <!-- "{l:Tr Tiny}" / "{l:Tr Huge}" under a slider -->
+        <Style x:Key="SliderEnd" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Opacity" Value="0.55" />
+            <Setter Property="Margin" Value="0,-4,0,0" />
+        </Style>
+        <Style x:Key="FormRow" TargetType="Grid">
+            <Setter Property="Margin" Value="0,6" />
+        </Style>
+        <Style TargetType="Separator" BasedOn="{StaticResource {x:Type Separator}}">
+            <Setter Property="Margin" Value="0,10" />
+        </Style>
+
+        <!-- Preference-window toolbar item: icon above label, highlighted when selected -->
+        <Style x:Key="ToolbarItem" TargetType="RadioButton">
+            <Setter Property="GroupName" Value="Panes" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Chrome" CornerRadius="6" Padding="10,4,10,3" Margin="2,0" Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#18808080" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Chrome" Property="Background" Value="#30808080" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+        <!-- Toolbar -->
+        <Border DockPanel.Dock="Top" Padding="0,6,0,8" BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <RadioButton x:Name="GeneralTab" Style="{StaticResource ToolbarItem}" IsChecked="True" Checked="OnPaneChecked" Tag="General">
+                    <StackPanel>
+                        <Image Source="/Assets/GeneralIcon.tif" Width="32" Height="32" RenderOptions.BitmapScalingMode="HighQuality" />
+                        <TextBlock Text="{l:Tr Pane_General}" FontSize="11" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </RadioButton>
+                <RadioButton x:Name="DisplayTab" Style="{StaticResource ToolbarItem}" Checked="OnPaneChecked" Tag="Display">
+                    <StackPanel>
+                        <Image Source="/Assets/DisplayIcon.tif" Width="32" Height="32" RenderOptions.BitmapScalingMode="HighQuality" />
+                        <TextBlock Text="{l:Tr Pane_Display}" FontSize="11" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </RadioButton>
+            </StackPanel>
+        </Border>
+
+        <Grid Margin="24,16,32,20">
+            <!-- ============================== General ============================== -->
+            <StackPanel x:Name="GeneralPane">
+                <Grid Style="{StaticResource FormRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{l:Tr DisplayIcon}" Style="{StaticResource FormLabel}" />
+                    <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"
+                              SelectedIndex="{Binding DisplayIcon, Converter={StaticResource IconPlacementIndex}}">
+                        <ComboBoxItem Content="{l:Tr Icon_Tray}" />
+                        <ComboBoxItem Content="{l:Tr Icon_Taskbar}" />
+                        <ComboBoxItem Content="{l:Tr Icon_Both}" />
+                    </ComboBox>
+                </Grid>
+
+                <Grid Style="{StaticResource FormRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{l:Tr ToggleCapturing}" Style="{StaticResource FormLabel}" />
+                    <ui:ShortcutRecorder Grid.Column="1" HorizontalAlignment="Left" Width="170"
+                                         Hotkey="{Binding ToggleShortcut}" />
+                </Grid>
+
+                <Grid Style="{StaticResource FormRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{l:Tr ModifierKeys}" Style="{StaticResource FormLabel}" />
+                    <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"
+                              SelectedIndex="{Binding ModifierStyle, Converter={StaticResource EnumIndex}}">
+                        <ComboBoxItem Content="{l:Tr Modifiers_Symbols}" />
+                        <ComboBoxItem Content="{l:Tr Modifiers_Names}" />
+                    </ComboBox>
+                </Grid>
+
+                <Grid Style="{StaticResource FormRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{l:Tr Language}" Style="{StaticResource FormLabel}" />
+                    <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"
+                              SelectedIndex="{Binding Language, Converter={StaticResource EnumIndex}}">
+                        <ComboBoxItem Content="{l:Tr Language_System}" />
+                        <ComboBoxItem Content="English" />
+                        <ComboBoxItem Content="Русский" />
+                    </ComboBox>
+                </Grid>
+
+                <Grid Style="{StaticResource FormRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Grid.Column="1" Content="{l:Tr ShowPrefsAtLaunch}"
+                              IsChecked="{Binding ShowPreferencesAtLaunch}" />
+                </Grid>
+            </StackPanel>
+
+            <!-- ============================== Display ============================== -->
+            <StackPanel x:Name="DisplayPane" Visibility="Collapsed">
+                <Grid Style="{StaticResource FormRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{l:Tr SelectedVisualizer}" Style="{StaticResource FormLabel}" />
+                    <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"
+                              ItemsSource="{x:Static vis:VisualizerRegistry.Names}"
+                              SelectedItem="{Binding SelectedVisualizer}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock>
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource VisualizerName}">
+                                            <Binding />
+                                            <Binding Source="{x:Static l:Loc.Instance}" Path="Language" />
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+                <Separator />
+                <Grid Style="{StaticResource FormRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{l:Tr MouseEvents}" Style="{StaticResource FormLabel}" />
+                    <ComboBox Grid.Column="1" HorizontalAlignment="Stretch"
+                              SelectedIndex="{Binding MouseDisplayOption, Converter={StaticResource EnumIndex}}">
+                        <ComboBoxItem Content="{l:Tr Mouse_None}" />
+                        <ComboBoxItem Content="{l:Tr Mouse_Pointer}" />
+                        <ComboBoxItem Content="{l:Tr Mouse_Visualizer}" />
+                        <ComboBoxItem Content="{l:Tr Mouse_Both}" />
+                    </ComboBox>
+                </Grid>
+                <Grid Style="{StaticResource FormRow}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{l:Tr BezelMaterial}" Style="{StaticResource FormLabel}" />
+                    <CheckBox Grid.Column="1" Content="{l:Tr Acrylic}" IsChecked="{Binding Acrylic}" />
+                </Grid>
+                <Separator />
+
+                <!-- Default visualizer -->
+                <StackPanel Visibility="{Binding SelectedVisualizer, Converter={StaticResource NameVisibility}, ConverterParameter=Default}">
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr DisplayMode}" Style="{StaticResource FormLabel}" VerticalAlignment="Top" Margin="0,6,12,0" />
+                        <StackPanel Grid.Column="1">
+                            <RadioButton GroupName="DefaultMode" Content="{l:Tr Mode_Command}"
+                                         IsChecked="{Binding Default.DisplayMode, Converter={StaticResource EnumEquals}, ConverterParameter=CommandKeysOnly}" />
+                            <RadioButton GroupName="DefaultMode" Content="{l:Tr Mode_Modified}"
+                                         IsChecked="{Binding Default.DisplayMode, Converter={StaticResource EnumEquals}, ConverterParameter=AllModifiedKeys}" />
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton GroupName="DefaultMode" Content="{l:Tr Mode_All}" MinWidth="100"
+                                             IsChecked="{Binding Default.DisplayMode, Converter={StaticResource EnumEquals}, ConverterParameter=AllKeys}" />
+                                <CheckBox Content="{l:Tr ApplyModifiers}" Margin="12,0,0,0" IsChecked="{Binding Default.ApplyModifiers}"
+                                          ToolTip="{l:Tr ApplyModifiers_Tip}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <Separator />
+
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{l:Tr FontSize}" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{l:Tr FontSize_Caption}" Style="{StaticResource Caption}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <Slider Minimum="8" Maximum="144" Value="{Binding Default.FontSize}" />
+                            <DockPanel>
+                                <TextBlock Text="{l:Tr Tiny}" Style="{StaticResource SliderEnd}" />
+                                <TextBlock Text="{l:Tr Huge}" Style="{StaticResource SliderEnd}" HorizontalAlignment="Right" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{l:Tr LineBreak}" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{l:Tr LineBreak_Caption}" Style="{StaticResource Caption}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <Slider Minimum="0.1" Maximum="1" Value="{Binding Default.KeystrokeDelay}" />
+                            <DockPanel>
+                                <TextBlock Text="{l:Tr Short}" Style="{StaticResource SliderEnd}" />
+                                <TextBlock Text="{l:Tr Long}" Style="{StaticResource SliderEnd}" HorizontalAlignment="Right" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{l:Tr Linger}" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{l:Tr Linger_Caption}" Style="{StaticResource Caption}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <Slider Minimum="0.1" Maximum="5" Value="{Binding Default.FadeDelay}" />
+                            <DockPanel>
+                                <TextBlock Text="{l:Tr Short}" Style="{StaticResource SliderEnd}" />
+                                <TextBlock Text="{l:Tr Long}" Style="{StaticResource SliderEnd}" HorizontalAlignment="Right" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{l:Tr FadeDuration}" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{l:Tr FadeDuration_Caption}" Style="{StaticResource Caption}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <Slider Minimum="0" Maximum="1" Value="{Binding Default.FadeDuration}" />
+                            <DockPanel>
+                                <TextBlock Text="{l:Tr Instant}" Style="{StaticResource SliderEnd}" />
+                                <TextBlock Text="{l:Tr FastIsh}" Style="{StaticResource SliderEnd}" HorizontalAlignment="Right" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr BezelColor}" Style="{StaticResource FormLabel}" />
+                        <ui:ColorWell Grid.Column="1" Color="{Binding Default.BezelColor}" />
+                    </Grid>
+
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr TextColor}" Style="{StaticResource FormLabel}" />
+                        <ui:ColorWell Grid.Column="1" Color="{Binding Default.TextColor}" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- Svelte visualizer -->
+                <StackPanel Visibility="{Binding SelectedVisualizer, Converter={StaticResource NameVisibility}, ConverterParameter=Svelte}">
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr DisplayAll}" Style="{StaticResource FormLabel}" />
+                        <CheckBox Grid.Column="1" IsChecked="{Binding Svelte.DisplayAll}" />
+                    </Grid>
+                </StackPanel>
+
+                <!-- Minimal visualizer -->
+                <StackPanel Visibility="{Binding SelectedVisualizer, Converter={StaticResource NameVisibility}, ConverterParameter=Minimal}">
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr DisplayedKeys}" Style="{StaticResource FormLabel}" VerticalAlignment="Top" Margin="0,6,12,0" />
+                        <StackPanel Grid.Column="1">
+                            <CheckBox Content="{l:Tr Minimal_Modifiers}" IsChecked="{Binding Minimal.ModifierKeys}" />
+                            <CheckBox Content="{l:Tr Minimal_Special}" IsChecked="{Binding Minimal.SpecialKeys}" />
+                            <CheckBox Content="{l:Tr Minimal_All}" IsChecked="{Binding Minimal.AllKeys}" />
+                        </StackPanel>
+                    </Grid>
+                    <Separator />
+
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{l:Tr Anchor}" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{l:Tr Anchor_Caption}" Style="{StaticResource Caption}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                            <RadioButton GroupName="MinimalAnchor" Content="{l:Tr Left}" MinWidth="80"
+                                         IsChecked="{Binding Minimal.AnchorRight, Converter={StaticResource InvertBool}}" />
+                            <RadioButton GroupName="MinimalAnchor" Content="{l:Tr Right}" Margin="12,0,0,0"
+                                         IsChecked="{Binding Minimal.AnchorRight}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{l:Tr FontSize}" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{l:Tr FontSize_Caption}" Style="{StaticResource Caption}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <Slider Minimum="8" Maximum="160" Value="{Binding Minimal.FontSize}" />
+                            <DockPanel>
+                                <TextBlock Text="{l:Tr Tiny}" Style="{StaticResource SliderEnd}" />
+                                <TextBlock Text="{l:Tr Huge}" Style="{StaticResource SliderEnd}" HorizontalAlignment="Right" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{l:Tr BezelSize}" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{l:Tr BezelSize_Caption}" Style="{StaticResource Caption}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <Slider Minimum="10" Maximum="200" Value="{Binding Minimal.BezelSize}" />
+                            <DockPanel>
+                                <TextBlock Text="{l:Tr Small}" Style="{StaticResource SliderEnd}" />
+                                <TextBlock Text="{l:Tr Large}" Style="{StaticResource SliderEnd}" HorizontalAlignment="Right" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="{l:Tr BorderRadius}" Style="{StaticResource FormLabel}" />
+                            <TextBlock Text="{l:Tr BorderRadius_Caption}" Style="{StaticResource Caption}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <Slider Minimum="0" Maximum="40" Value="{Binding Minimal.BorderRadius}" />
+                            <DockPanel>
+                                <TextBlock Text="{l:Tr Sharp}" Style="{StaticResource SliderEnd}" />
+                                <TextBlock Text="{l:Tr Rounded}" Style="{StaticResource SliderEnd}" HorizontalAlignment="Right" />
+                            </DockPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr BezelColor}" Style="{StaticResource FormLabel}" />
+                        <ui:ColorWell Grid.Column="1" Color="{Binding Minimal.BezelColor}" />
+                    </Grid>
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr TextColor}" Style="{StaticResource FormLabel}" />
+                        <ui:ColorWell Grid.Column="1" Color="{Binding Minimal.TextColor}" />
+                    </Grid>
+                    <Grid Style="{StaticResource FormRow}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr TextShadowColor}" Style="{StaticResource FormLabel}" />
+                        <ui:ColorWell Grid.Column="1" Color="{Binding Minimal.TextShadowColor}" />
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</Window>
