@@ -8,6 +8,16 @@ It shows what you type and click in bezels over the screen, for screencasts, dem
 The visualizers, preferences, defaults and keystroke formatting follow KeyCastr's source closely.
 The bezels can blur the desktop behind them (acrylic).
 
+## Screenshots
+
+| Default | Svelte | Minimal |
+| --- | --- | --- |
+| ![Default visualizer](docs/screenshots/visualizer-default.png) | ![Svelte visualizer](docs/screenshots/visualizer-svelte.png) | ![Minimal visualizer](docs/screenshots/visualizer-minimal.png) |
+
+| Preferences → General | Preferences → Display |
+| --- | --- |
+| ![General preferences](docs/screenshots/preferences-general.png) | ![Display preferences](docs/screenshots/preferences-display.png) |
+
 ## Download
 
 Get the latest build from [Releases](https://github.com/nikethebike/WinKeyCastr/releases/latest):

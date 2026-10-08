@@ -48,6 +48,8 @@ public partial class App : Application
             settings.ShowPreferencesAtLaunch = e.Args.Contains("--prefs");
             if (e.Args.Contains("--ru"))
                 settings.Language = WinKeyCastr.Localization.AppLanguage.Russian;
+            else if (e.Args.Contains("--en"))
+                settings.Language = WinKeyCastr.Localization.AppLanguage.English;
         }
 #endif
         _controller = new AppController(settings);

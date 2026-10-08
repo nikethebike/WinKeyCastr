@@ -20,7 +20,9 @@ public sealed class Loc : INotifyPropertyChanged
 {
     public static Loc Instance { get; } = new();
 
-    private Dictionary<string, string> _table = English;
+    // Not initialised from English here: static initialisers run in source order, so the
+    // dictionaries below do not exist yet when Instance is constructed.
+    private Dictionary<string, string>? _table;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -28,7 +30,7 @@ public sealed class Loc : INotifyPropertyChanged
     public string Language { get; private set; } = "en";
 
     public string this[string key] =>
-        _table.TryGetValue(key, out var value) ? value
+        (_table ?? English).TryGetValue(key, out var value) ? value
         : English.TryGetValue(key, out var fallback) ? fallback
         : key;
 

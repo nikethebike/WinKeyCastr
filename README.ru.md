@@ -8,6 +8,16 @@
 Визуализаторы, настройки, значения по умолчанию и формат отображения клавиш повторяют исходный код
 KeyCastr. Плашки умеют размывать фон под собой (эффект акрила).
 
+## Скриншоты
+
+| Стандартный | Svelte | Минимальный |
+| --- | --- | --- |
+| ![Стандартный визуализатор](docs/screenshots/visualizer-default.png) | ![Визуализатор Svelte](docs/screenshots/visualizer-svelte.png) | ![Минимальный визуализатор](docs/screenshots/visualizer-minimal.png) |
+
+| Настройки → Отображение | Настройки → General (на английском) |
+| --- | --- |
+| ![Настройки на русском](docs/screenshots/preferences-ru.png) | ![Основные настройки](docs/screenshots/preferences-general.png) |
+
 ## Скачать
 
 Последняя версия лежит в [Releases](https://github.com/nikethebike/WinKeyCastr/releases/latest):
