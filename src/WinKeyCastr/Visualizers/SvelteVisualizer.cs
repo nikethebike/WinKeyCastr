@@ -46,7 +46,11 @@ public sealed class SvelteVisualizer : IVisualizer
         root.Children.Add(new System.Windows.Shapes.Path
         {
             Data = BuildBackground(),
-            Fill = new SolidColorBrush(Color.FromArgb(217, 0, 0, 0)), // white 0, alpha 0.85
+            // KeyCastr's fixed black at 85 %. Over acrylic that would hide the blur almost entirely,
+            // so the tint is lighter there, as with Windows' own acrylic surfaces.
+            Fill = new SolidColorBrush(context.Settings.Acrylic && _window.HasBackdrop
+                ? Color.FromArgb(110, 0, 0, 0)
+                : Color.FromArgb(217, 0, 0, 0)),
         });
 
         _displayedText = new TextBlock
@@ -56,6 +60,10 @@ public sealed class SvelteVisualizer : IVisualizer
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(0, 0, 0, ModifierRowHeight),
+            // Keeps the text readable over the lighter acrylic tint.
+            Effect = _window.HasBackdrop
+                ? new DropShadowEffect { Color = Colors.Black, BlurRadius = 6, ShadowDepth = 1.5, Direction = 315, Opacity = 0.6 }
+                : null,
         };
         root.Children.Add(_displayedText);
 
